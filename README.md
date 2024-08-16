@@ -1,4 +1,4 @@
-```
+
 # Gitleaks Pre-Commit Hook
 
 This repository uses a Git `pre-commit` hook to automatically scan for secrets in the codebase using [Gitleaks](https://github.com/gitleaks/gitleaks).
