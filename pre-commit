@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# Set the version of gitleaks you want to use
+GITLEAKS_VERSION="${GITLEAKS_VERSION:-8.18.4}"
+
+# Check if the git config option is set to enable gitleaks hook
+if ! git config --bool hooks.gitleaks | grep -q true; then
+  echo "Gitleaks hook is not enabled. To enable it, run:"
+  echo "git config --bool hooks.gitleaks true"
+  exit 0
+fi
+
+# Function to download and install gitleaks
+install_gitleaks() {
+  OS=$(uname | tr '[:upper:]' '[:lower:]')
+  ARCH=$(uname -m)
+
+  # Translate architecture names
+  if [[ "$ARCH" == "x86_64" ]]; then
+    ARCH="x64"
+  elif [[ "$ARCH" == "armv7l" ]]; then
+    ARCH="armv7"
+  elif [[ "$ARCH" == "aarch64" ]]; then
+    ARCH="arm64"
+  fi
+
+  GITLEAKS_URL="https://github.com/gitleaks/gitleaks/releases/download/v$GITLEAKS_VERSION/gitleaks_${GITLEAKS_VERSION}_${OS}_${ARCH}.tar.gz"
+  echo "Downloading gitleaks from $GITLEAKS_URL"
+
+  # Check if the URL is valid
+  if ! curl -sSfI "$GITLEAKS_URL" > /dev/null; then
+    echo "Failed to download gitleaks. Please check if the specified version and architecture are correct."
+    exit 1
+  fi
+
+  # Download and extract gitleaks
+  curl -sSL "$GITLEAKS_URL" | tar -xz gitleaks
+
+  if [ ! -f "./gitleaks" ]; then
+    echo "Failed to download gitleaks. Please check the URL or your internet connection."
+    exit 1
+  fi
+
+  # Install to /usr/local/bin using sudo
+  echo "Installing gitleaks to /usr/local/bin using sudo..."
+  sudo mv gitleaks /usr/local/bin/
+
+  INSTALL_PATH="/usr/local/bin/gitleaks"
+  echo "Gitleaks installed successfully at $INSTALL_PATH"
+}
+
+# Check if gitleaks is installed, if not, install it
+if ! command -v gitleaks &> /dev/null; then
+  echo "Gitleaks not found. Installing gitleaks..."
+  install_gitleaks
+else
+  GITLEAKS_PATH=$(command -v gitleaks)
+  echo "Gitleaks is already installed at $GITLEAKS_PATH"
+fi
+
+# Run gitleaks on the entire repository with verbose output
+echo "Running gitleaks to check the entire repository..."
+if ! gitleaks detect --source . --no-git -v; then
+  echo "Secrets detected! Please fix the issues before committing."
+  exit 1
+fi
+
+echo "No secrets detected. Proceeding with commit."
