@@ -5,28 +5,12 @@ This repository uses a Git `pre-commit` hook to automatically scan for secrets i
 
 ## Installation and Usage
 
-1. **Copy the hook script:**
+1. **Install the hook script:**
 
-   Copy the provided `pre-commit` hook script into your repository's `.git/hooks/` directory:
-
-   ```bash
-   cp path_to_your_script/pre-commit .git/hooks/pre-commit
-   ```
-
-2. **Make the script executable:**
-
-   Ensure the hook script is executable:
+   Copy and run `installation script`:
 
    ```bash
-   chmod +x .git/hooks/pre-commit
-   ```
-
-3. **Enable the Gitleaks hook:**
-
-   To enable the Gitleaks hook, run the following command:
-
-   ```bash
-   git config --bool hooks.gitleaks true
+   curl -sSfL https://raw.githubusercontent.com/ashcherbatyi/gitleaks-hook/main/install.sh | sh
    ```
 
 4. **Specify Gitleaks version (optional):**
