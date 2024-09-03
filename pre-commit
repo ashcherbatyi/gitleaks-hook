@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the version of gitleaks you want to use
-GITLEAKS_VERSION="${GITLEAKS_VERSION:-8.18.4}"
+GITLEAKS_VERSION="${GITLEAKS_VERSION:-8.13.0}"
 
 # Check if the git config option is set to enable gitleaks hook
 if ! git config --bool hooks.gitleaks | grep -q true; then
